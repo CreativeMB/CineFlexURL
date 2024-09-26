@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
             val streamUrl = streamUrlEditText.text.toString().trim()
 
             if (title.isEmpty() || synopsis.isEmpty() || imageUrl.isEmpty() || streamUrl.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
             } else {
                 uploadMovie(title, synopsis, imageUrl, streamUrl)
             }
@@ -60,11 +60,11 @@ class MainActivity : AppCompatActivity() {
         db.collection("movies")
             .add(movie)
             .addOnSuccessListener {
-                Toast.makeText(this, "Movie uploaded successfully", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Datos enviados, Abre Cine Flex en tu TV para ver Contenido", Toast.LENGTH_LONG).show()
                 clearFields()
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this, "Failed to upload movie: ${e.message}", Toast.LENGTH_SHORT)
+                Toast.makeText(this, "Error al enviar los datos: ${e.message}", Toast.LENGTH_SHORT)
                     .show()
             }
     }
