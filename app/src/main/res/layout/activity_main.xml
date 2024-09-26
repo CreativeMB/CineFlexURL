@@ -56,7 +56,7 @@
                 android:id="@+id/synopsisEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="año o TV"
+                android:hint="Año estreno pelicula o Canal TV"
                 android:inputType="text"
                 android:textSize="18sp"
                 android:layout_marginBottom="16dp" />
