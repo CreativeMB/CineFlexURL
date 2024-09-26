@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.firestore.FirebaseFirestore
-
+import com.google.firebase.Timestamp
 class MainActivity : AppCompatActivity() {
     private lateinit var titleEditText: EditText
     private lateinit var synopsisEditText: EditText
@@ -74,7 +74,8 @@ class MainActivity : AppCompatActivity() {
             "title" to title,
             "synopsis" to synopsis,
             "imageUrl" to imageUrl,
-            "streamUrl" to streamUrl
+            "streamUrl" to streamUrl,
+            "createdAt" to Timestamp.now() // Agregar la fecha de creación
         )
 
         db.collection("movies")
