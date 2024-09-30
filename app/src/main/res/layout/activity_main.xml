@@ -100,7 +100,7 @@
                 android:textSize="24sp"
                 android:background="#2FFFD600"
                 android:padding="25dp"
-                android:text="Verrificador de enlaces URL" />
+                android:text="ver video antes de enviarlo" />
         </LinearLayout>
     </ScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
