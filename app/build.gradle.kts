@@ -50,4 +50,9 @@ dependencies {
     implementation ("com.google.firebase:firebase-firestore-ktx:24.5.0")
     implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
     implementation("com.google.firebase:firebase-analytics")
+
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
+
+    implementation ("com.squareup.okhttp3:okhttp:4.9.1")
 }
