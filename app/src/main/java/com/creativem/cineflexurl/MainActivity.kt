@@ -1,11 +1,13 @@
 package com.creativem.cineflexurl
 
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.net.Uri
 import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -205,4 +207,6 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "No se puede abrir la página: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
+
 }
+
