@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-      android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -9,6 +13,7 @@
             android:layout_gravity="center"
             android:orientation="vertical"
             android:padding="16dp">
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -29,7 +34,6 @@
                 android:textSize="30sp"
                 android:textStyle="bold"
                 android:layout_gravity="center_horizontal"
-
                 android:layout_marginBottom="8dp" />
 
             <TextView
@@ -39,7 +43,6 @@
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"
                 android:paddingBottom="30dp"
-
                 android:layout_marginBottom="16dp" />
 
             <EditText
@@ -99,9 +102,36 @@
                 android:background="#2FFFD600"
                 android:padding="25dp"
                 android:text="ver video antes de enviarlo" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-            android:layout_marginBottom="200dp" />
+                android:layout_marginBottom="200dp" />
         </LinearLayout>
-</ScrollView>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp">
+
+        <ImageView
+            android:id="@+id/pedidos"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/pedidos"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="30dp"/>
+
+        <ImageView
+            android:id="@+id/movies"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/peliculas"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+
+</FrameLayout>

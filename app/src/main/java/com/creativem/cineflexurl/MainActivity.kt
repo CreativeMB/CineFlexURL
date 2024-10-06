@@ -1,13 +1,11 @@
 package com.creativem.cineflexurl
 
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Bundle
 import android.net.Uri
 import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -16,7 +14,6 @@ import com.bumptech.glide.Glide
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import okhttp3.*
-import java.io.IOException
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 class MainActivity : AppCompatActivity() {
     private lateinit var titleEditText: EditText
@@ -26,7 +23,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var uploadText: TextView
     private lateinit var openWebsiteTextView: TextView
     private lateinit var previewImageView: ImageView
-
+    private lateinit var pedidosImageView: ImageView
+    private lateinit var noviesImageView: ImageView
     private val db = FirebaseFirestore.getInstance()
     private val client = OkHttpClient()
 
@@ -43,7 +41,8 @@ class MainActivity : AppCompatActivity() {
         uploadText = findViewById(R.id.uploadText)
         openWebsiteTextView = findViewById(R.id.url)
         previewImageView = findViewById(R.id.previewImageView)
-
+        pedidosImageView = findViewById(R.id.pedidos)
+        noviesImageView = findViewById(R.id.movies)
         // Validar imagen al perder el foco
         imageUrlEditText.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
@@ -59,8 +58,17 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-        // Validar video al perder el foco
+        // Establecer el OnClickListener para abrir PedidosMovies
+        pedidosImageView.setOnClickListener {
+            val intent = Intent(this, PedidosMovies::class.java)
+            startActivity(intent)
+        }
+        // Establecer el OnClickListener para abrir PedidosMovies
+        noviesImageView.setOnClickListener {
+            val intent = Intent(this, Movies::class.java)
+            startActivity(intent)
+        }
+            // Validar video al perder el foco
         streamUrlEditText.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
                 val streamUrl = streamUrlEditText.text.toString().trim()
@@ -138,9 +146,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Verifica si el URL tiene un esquema válido
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            Toast.makeText(this, "La URL debe comenzar con 'http://' o 'https://'.", Toast.LENGTH_LONG).show()
-            return false
+        if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("https:\\") && !url.startsWith("http:\\")) {
+            Toast.makeText(this, "La URL debe comenzar con 'http://', 'https://' o 'https:\\'.", Toast.LENGTH_LONG).show();
+            return false;
         }
 
         // Intenta construir la URL con OkHttp
