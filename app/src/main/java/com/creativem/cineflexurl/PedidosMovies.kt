@@ -36,6 +36,7 @@ class PedidosMovies : AppCompatActivity() {
     }
 
     private fun loadMovies() {
+        movieList.clear()
         db.collection("pedidosmovies").get()
             .addOnCompleteListener { task: Task<QuerySnapshot> ->
                 if (task.isSuccessful) {
@@ -56,7 +57,7 @@ class PedidosMovies : AppCompatActivity() {
     private fun deleteMovie(movieId: String) {
         db.collection("pedidosmovies").document(movieId).delete()
             .addOnSuccessListener {
-                Toast.makeText(this, "Película eliminada", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Pedido eliminado", Toast.LENGTH_SHORT).show()
                 loadMovies() // Recargar películas después de eliminar
             }
             .addOnFailureListener { e ->

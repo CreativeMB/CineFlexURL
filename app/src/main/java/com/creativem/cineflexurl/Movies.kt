@@ -31,13 +31,14 @@ class Movies : AppCompatActivity() {
     }
 
     private fun loadMovies() {
+        movieList.clear() // Limpiar la lista antes de agregar nuevas películas
         db.collection("movies").get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
                     val movie = document.toObject(Movie::class.java).copy(id = document.id) // Agregar el ID
                     movieList.add(movie)
                 }
-                moviesAdapter.notifyDataSetChanged()
+                moviesAdapter.notifyDataSetChanged() // Notificar al adaptador de cambios
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Error al cargar las películas", Toast.LENGTH_SHORT).show()
