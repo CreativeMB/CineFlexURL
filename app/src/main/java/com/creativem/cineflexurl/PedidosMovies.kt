@@ -1,6 +1,7 @@
 package com.creativem.cineflexurl
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +22,7 @@ class PedidosMovies : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.pedidosmovies)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         recyclerViewPedidos = findViewById(R.id.recyclerViewPedidos)
         recyclerViewPedidos.layoutManager = LinearLayoutManager(this)

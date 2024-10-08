@@ -1,6 +1,7 @@
 package com.creativem.cineflexurl
 
 import android.os.Bundle
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +20,7 @@ class VerMovies : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.vermovies)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         recyclerViewMovies = findViewById(R.id.recyclerViewMovies)
         recyclerViewMovies.layoutManager = LinearLayoutManager(this)

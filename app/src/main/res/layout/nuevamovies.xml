@@ -20,11 +20,6 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="200dp" />
-
             <ImageView
                 android:id="@+id/previewImageView"
                 android:layout_width="match_parent"
@@ -117,17 +112,20 @@
     </ScrollView>
 
     <LinearLayout
+        android:id="@+id/buttonContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp">
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:layout_alignParentTop="true">
 
         <ImageView
             android:id="@+id/pedidos"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/pedidos"
+            android:layout_marginTop="25dp"
             android:layout_marginStart="8dp"
             android:layout_marginBottom="30dp"/>
 

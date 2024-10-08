@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.net.Uri
 import android.util.Log
+import android.view.WindowManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -32,6 +33,9 @@ class NuevaMovies : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge() // Activar modo de pantalla completa
         setContentView(R.layout.nuevamovies)
+
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
         movieId = intent.getStringExtra("MOVIE_ID")
         // Inicializar los componentes de la interfaz
         titleEditText = findViewById(R.id.titleEditText)

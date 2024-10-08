@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -47,6 +48,7 @@ class EditMovies : DialogFragment() {
     ): View? {
         // Asegúrate de tener un layout específico para el diálogo
         return inflater.inflate(R.layout.nuevamovies, container, false) // Cambia a tu layout de diálogo
+
     }
 
     override fun onStart() {
@@ -54,6 +56,9 @@ class EditMovies : DialogFragment() {
         dialog?.window?.apply {
             setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             setBackgroundDrawableResource(R.color.white) // Cambia a un color de fondo opaco
+            // Ocultar la barra de estado
+            dialog?.window?.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
             // Establecer otras configuraciones aquí si es necesario
         }
     }
@@ -199,6 +204,7 @@ class EditMovies : DialogFragment() {
             db.collection("movies").document(id).set(movieData)
                 .addOnSuccessListener {
                     Toast.makeText(context, "Película actualizada correctamente", Toast.LENGTH_LONG).show()
+                    dismiss()
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(context, "Error al actualizar la película: ${e.message}", Toast.LENGTH_LONG).show()
