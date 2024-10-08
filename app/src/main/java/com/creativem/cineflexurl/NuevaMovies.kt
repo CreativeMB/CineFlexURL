@@ -178,7 +178,7 @@ class NuevaMovies : AppCompatActivity() {
         }
     }
 
-    // Subir los datos a Firestore
+    // Subir los datos a Firestore, pero solo si la película no existe ya
     private fun uploadMovie(
         movieId: String?,
         title: String,
@@ -191,27 +191,41 @@ class NuevaMovies : AppCompatActivity() {
             return
         }
 
-        Log.d("movies", "Subiendo película con movieId: $movieId")
+        Log.d("movies", "Comprobando si la película ya existe con movieId: $movieId")
 
-        val movie: MutableMap<String, Any> = mutableMapOf(
-            "title" to title,
-            "synopsis" to synopsis,
-            "imageUrl" to imageUrl,
-            "streamUrl" to streamUrl,
-            "updatedAt" to Timestamp.now()
-        )
+        // Comprobar si el documento ya existe
+        val docRef = db.collection("movies").document(movieId)
+        docRef.get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                // Si la película ya existe, mostrar un mensaje de error
+                Log.e("movies", "La película ya existe, no se puede sobrescribir")
+                Toast.makeText(this, "Error: La película ya existe.", Toast.LENGTH_LONG).show()
+            } else {
+                // Si no existe, subir la nueva película
+                val movie: MutableMap<String, Any> = mutableMapOf(
+                    "title" to title,
+                    "synopsis" to synopsis,
+                    "imageUrl" to imageUrl,
+                    "streamUrl" to streamUrl,
+                    "createdAt" to Timestamp.now()
+                )
 
-        db.collection("movies").document(movieId)
-            .set(movie)
-            .addOnSuccessListener {
-                Log.d("movies", "Película subida correctamente")
-                Toast.makeText(this, "Película actualizada correctamente", Toast.LENGTH_LONG).show()
-                clearFields() // Limpiar campos después de éxito
+                db.collection("movies").document(movieId)
+                    .set(movie)
+                    .addOnSuccessListener {
+                        Log.d("movies", "Película subida correctamente")
+                        Toast.makeText(this, "Película creada correctamente", Toast.LENGTH_LONG).show()
+                        clearFields() // Limpiar campos después de éxito
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("movies", "Error al subir la película: ${e.message}")
+                        Toast.makeText(this, "Error al subir la película: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
             }
-            .addOnFailureListener { e ->
-                Log.e("movies", "Error al subir la película: ${e.message}")
-                Toast.makeText(this, "Error al actualizar la película: ${e.message}", Toast.LENGTH_LONG).show()
-            }
+        }.addOnFailureListener { e ->
+            Log.e("movies", "Error al comprobar la existencia de la película: ${e.message}")
+            Toast.makeText(this, "Error al comprobar la existencia de la película: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     // Limpiar campos luego de subir
