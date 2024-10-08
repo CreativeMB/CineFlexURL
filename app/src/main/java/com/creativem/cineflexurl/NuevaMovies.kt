@@ -28,7 +28,6 @@ class NuevaMovies : AppCompatActivity() {
     private lateinit var noviesImageView: ImageView
     private val db = FirebaseFirestore.getInstance()
     private val client = OkHttpClient()
-    private var movieId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,13 +35,6 @@ class NuevaMovies : AppCompatActivity() {
         setContentView(R.layout.nuevamovies)
 
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
-
-        movieId = intent.getStringExtra("MOVIE_ID")
-        if (movieId == null) {
-            // Si no se recibe un movieId, se genera un nuevo ID
-            movieId = db.collection("movies").document().id
-            Log.d("movies", "Generando nuevo movieId: $movieId")
-        }
 
         // Inicializar los componentes de la interfaz
         titleEditText = findViewById(R.id.titleEditText)
@@ -123,7 +115,7 @@ class NuevaMovies : AppCompatActivity() {
             // Validar la URL del video antes de subir
             if (validateVideoUrl(streamUrl)) {
                 Log.d("movies", "URL de video válida")
-                uploadMovie(movieId, title, synopsis, imageUrl, streamUrl)
+                uploadMovie(title, synopsis, imageUrl, streamUrl)
             } else {
                 Toast.makeText(this, "URL de video inválida. Intenta con otra.", Toast.LENGTH_LONG).show()
             }
@@ -178,54 +170,34 @@ class NuevaMovies : AppCompatActivity() {
         }
     }
 
-    // Subir los datos a Firestore, pero solo si la película no existe ya
+    // Subir los datos a Firestore
     private fun uploadMovie(
-        movieId: String?,
         title: String,
         synopsis: String,
         imageUrl: String,
         streamUrl: String
     ) {
-        if (movieId == null) {
-            Log.e("movies", "movieId es nulo, no se puede subir")
-            return
-        }
+        // Crear el mapa con los datos de la película
+        val movie: MutableMap<String, Any> = mutableMapOf(
+            "title" to title,
+            "synopsis" to synopsis,
+            "imageUrl" to imageUrl,
+            "streamUrl" to streamUrl,
+            "createdAt" to Timestamp.now()
+        )
 
-        Log.d("movies", "Comprobando si la película ya existe con movieId: $movieId")
-
-        // Comprobar si el documento ya existe
-        val docRef = db.collection("movies").document(movieId)
-        docRef.get().addOnSuccessListener { document ->
-            if (document.exists()) {
-                // Si la película ya existe, mostrar un mensaje de error
-                Log.e("movies", "La película ya existe, no se puede sobrescribir")
-                Toast.makeText(this, "Error: La película ya existe.", Toast.LENGTH_LONG).show()
-            } else {
-                // Si no existe, subir la nueva película
-                val movie: MutableMap<String, Any> = mutableMapOf(
-                    "title" to title,
-                    "synopsis" to synopsis,
-                    "imageUrl" to imageUrl,
-                    "streamUrl" to streamUrl,
-                    "createdAt" to Timestamp.now()
-                )
-
-                db.collection("movies").document(movieId)
-                    .set(movie)
-                    .addOnSuccessListener {
-                        Log.d("movies", "Película subida correctamente")
-                        Toast.makeText(this, "Película creada correctamente", Toast.LENGTH_LONG).show()
-                        clearFields() // Limpiar campos después de éxito
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e("movies", "Error al subir la película: ${e.message}")
-                        Toast.makeText(this, "Error al subir la película: ${e.message}", Toast.LENGTH_LONG).show()
-                    }
+        // Usar add() para generar un nuevo documento con un ID único automáticamente
+        db.collection("movies")
+            .add(movie) // Esto siempre creará un nuevo documento
+            .addOnSuccessListener { documentReference ->
+                Log.d("movies", "Película creada correctamente con ID: ${documentReference.id}")
+                Toast.makeText(this, "Película creada correctamente", Toast.LENGTH_LONG).show()
+                clearFields() // Limpiar los campos después del éxito
             }
-        }.addOnFailureListener { e ->
-            Log.e("movies", "Error al comprobar la existencia de la película: ${e.message}")
-            Toast.makeText(this, "Error al comprobar la existencia de la película: ${e.message}", Toast.LENGTH_LONG).show()
-        }
+            .addOnFailureListener { e ->
+                Log.e("movies", "Error al subir la película: ${e.message}")
+                Toast.makeText(this, "Error al subir la película: ${e.message}", Toast.LENGTH_LONG).show()
+            }
     }
 
     // Limpiar campos luego de subir
@@ -239,7 +211,7 @@ class NuevaMovies : AppCompatActivity() {
 
     // Abrir página web
     private fun openWebPage(url: String) {
-        Log.d("movies", "Intentando abrir la URL: $url")
+        Log.d("openWebPage", "Intentando abrir la URL: $url")
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(intent)
     }
