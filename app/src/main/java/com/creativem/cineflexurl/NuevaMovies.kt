@@ -29,6 +29,7 @@ class NuevaMovies : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private val client = OkHttpClient()
     private var movieId: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge() // Activar modo de pantalla completa
@@ -37,6 +38,12 @@ class NuevaMovies : AppCompatActivity() {
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         movieId = intent.getStringExtra("MOVIE_ID")
+        if (movieId == null) {
+            // Si no se recibe un movieId, se genera un nuevo ID
+            movieId = db.collection("movies").document().id
+            Log.d("movies", "Generando nuevo movieId: $movieId")
+        }
+
         // Inicializar los componentes de la interfaz
         titleEditText = findViewById(R.id.titleEditText)
         synopsisEditText = findViewById(R.id.synopsisEditText)
@@ -47,6 +54,7 @@ class NuevaMovies : AppCompatActivity() {
         previewImageView = findViewById(R.id.previewImageView)
         pedidosImageView = findViewById(R.id.pedidos)
         noviesImageView = findViewById(R.id.movies)
+
         // Validar imagen al perder el foco
         imageUrlEditText.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
@@ -62,17 +70,20 @@ class NuevaMovies : AppCompatActivity() {
                 }
             }
         }
+
         // Establecer el OnClickListener para abrir PedidosMovies
         pedidosImageView.setOnClickListener {
             val intent = Intent(this, PedidosMovies::class.java)
             startActivity(intent)
         }
-        // Establecer el OnClickListener para abrir PedidosMovies
+
+        // Establecer el OnClickListener para abrir VerMovies
         noviesImageView.setOnClickListener {
             val intent = Intent(this, VerMovies::class.java)
             startActivity(intent)
         }
-            // Validar video al perder el foco
+
+        // Validar video al perder el foco
         streamUrlEditText.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
                 val streamUrl = streamUrlEditText.text.toString().trim()
@@ -81,11 +92,11 @@ class NuevaMovies : AppCompatActivity() {
                     return@setOnFocusChangeListener
                 }
                 if (validateVideoUrl(streamUrl)) {
-                    Log.d("NuevaMovies", "URL de video válida")
+                    Log.d("movies", "URL de video válida")
                     Toast.makeText(this, "URL de video válida", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "URL de video inválida. Intenta con otra.", Toast.LENGTH_LONG).show()
-                    Log.d("NuevaMovies", "URL de video inválida")
+                    Log.d("movies", "URL de video inválida")
                 }
             }
         }
@@ -111,8 +122,8 @@ class NuevaMovies : AppCompatActivity() {
 
             // Validar la URL del video antes de subir
             if (validateVideoUrl(streamUrl)) {
-                Log.d("NuevaMovies", "URL de video válida")
-                uploadMovie(movieId, title, synopsis, imageUrl, streamUrl) // Pasa movieId aquí
+                Log.d("movies", "URL de video válida")
+                uploadMovie(movieId, title, synopsis, imageUrl, streamUrl)
             } else {
                 Toast.makeText(this, "URL de video inválida. Intenta con otra.", Toast.LENGTH_LONG).show()
             }
@@ -124,7 +135,7 @@ class NuevaMovies : AppCompatActivity() {
         }
     }
 
-    // Validar si la URL es válida (sintácticamente correcta)
+    // Validar si la URL es válida
     private fun isValidUrl(url: String): Boolean {
         return try {
             Uri.parse(url)
@@ -142,23 +153,21 @@ class NuevaMovies : AppCompatActivity() {
             .into(previewImageView)
     }
 
+    // Validar la URL del video
     private fun validateVideoUrl(url: String?): Boolean {
-        // Verifica si el URL es nulo o vacío
         if (url.isNullOrEmpty()) {
             Toast.makeText(this, "Por favor ingrese una URL válida.", Toast.LENGTH_LONG).show()
             return false
         }
 
-        // Verifica si el URL tiene un esquema válido
-        if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("https:\\") && !url.startsWith("http:\\")) {
-            Toast.makeText(this, "La URL debe comenzar con 'http://', 'https://' o 'https:\\'.", Toast.LENGTH_LONG).show();
-            return false;
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            Toast.makeText(this, "La URL debe comenzar con 'http://' o 'https://'.", Toast.LENGTH_LONG).show()
+            return false
         }
 
-        // Intenta construir la URL con OkHttp
         return try {
             url.toHttpUrlOrNull()?.let {
-                true // Si se construye exitosamente, la URL es válida
+                true
             } ?: run {
                 Toast.makeText(this, "La URL ingresada no es válida.", Toast.LENGTH_LONG).show()
                 false
@@ -177,24 +186,30 @@ class NuevaMovies : AppCompatActivity() {
         imageUrl: String,
         streamUrl: String
     ) {
-        if (movieId == null) return
+        if (movieId == null) {
+            Log.e("movies", "movieId es nulo, no se puede subir")
+            return
+        }
 
-        // Crear un mapa mutable y especificar el tipo de cada valor
+        Log.d("movies", "Subiendo película con movieId: $movieId")
+
         val movie: MutableMap<String, Any> = mutableMapOf(
-            "title" to title as Any,
-            "synopsis" to synopsis as Any,
-            "imageUrl" to imageUrl as Any,
-            "streamUrl" to streamUrl as Any,
-            "updatedAt" to Timestamp.now() // Agregar la fecha de actualización
+            "title" to title,
+            "synopsis" to synopsis,
+            "imageUrl" to imageUrl,
+            "streamUrl" to streamUrl,
+            "updatedAt" to Timestamp.now()
         )
 
-        // Actualizar el documento en Firestore
-        db.collection("vermovies").document(movieId)
+        db.collection("movies").document(movieId)
             .set(movie)
             .addOnSuccessListener {
+                Log.d("movies", "Película subida correctamente")
                 Toast.makeText(this, "Película actualizada correctamente", Toast.LENGTH_LONG).show()
+                clearFields() // Limpiar campos después de éxito
             }
             .addOnFailureListener { e ->
+                Log.e("movies", "Error al subir la película: ${e.message}")
                 Toast.makeText(this, "Error al actualizar la película: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
@@ -210,19 +225,8 @@ class NuevaMovies : AppCompatActivity() {
 
     // Abrir página web
     private fun openWebPage(url: String) {
-        Log.d("NuevaMovies", "Intentando abrir la URL: $url") // Para depuración
-        val webpage: Uri = Uri.parse(url)
-        val intent = Intent(Intent.ACTION_VIEW, webpage)
-
-        // Agregando un verificador para asegurarnos que existe un paquete que pueda manejar el intent
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-        try {
-            startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(this, "No se puede abrir la página: ${e.message}", Toast.LENGTH_LONG).show()
-        }
+        Log.d("movies", "Intentando abrir la URL: $url")
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        startActivity(intent)
     }
-
 }
-
