@@ -18,10 +18,10 @@
             android:name=".PedidosMovies"
             android:exported="false" />
         <activity
-            android:name=".Movies"
+            android:name=".VerMovies"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".NuevaMovies"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>

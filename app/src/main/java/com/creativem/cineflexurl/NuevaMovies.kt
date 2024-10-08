@@ -15,7 +15,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-class MainActivity : AppCompatActivity() {
+class NuevaMovies : AppCompatActivity() {
     private lateinit var titleEditText: EditText
     private lateinit var synopsisEditText: EditText
     private lateinit var imageUrlEditText: EditText
@@ -27,12 +27,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var noviesImageView: ImageView
     private val db = FirebaseFirestore.getInstance()
     private val client = OkHttpClient()
-
+    private var movieId: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge() // Activar modo de pantalla completa
-        setContentView(R.layout.activity_main)
-
+        setContentView(R.layout.nuevamovies)
+        movieId = intent.getStringExtra("MOVIE_ID")
         // Inicializar los componentes de la interfaz
         titleEditText = findViewById(R.id.titleEditText)
         synopsisEditText = findViewById(R.id.synopsisEditText)
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         }
         // Establecer el OnClickListener para abrir PedidosMovies
         noviesImageView.setOnClickListener {
-            val intent = Intent(this, Movies::class.java)
+            val intent = Intent(this, VerMovies::class.java)
             startActivity(intent)
         }
             // Validar video al perder el foco
@@ -77,11 +77,11 @@ class MainActivity : AppCompatActivity() {
                     return@setOnFocusChangeListener
                 }
                 if (validateVideoUrl(streamUrl)) {
-                    Log.d("MainActivity", "URL de video válida")
+                    Log.d("NuevaMovies", "URL de video válida")
                     Toast.makeText(this, "URL de video válida", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "URL de video inválida. Intenta con otra.", Toast.LENGTH_LONG).show()
-                    Log.d("MainActivity", "URL de video inválida")
+                    Log.d("NuevaMovies", "URL de video inválida")
                 }
             }
         }
@@ -107,8 +107,8 @@ class MainActivity : AppCompatActivity() {
 
             // Validar la URL del video antes de subir
             if (validateVideoUrl(streamUrl)) {
-                Log.d("MainActivity", "URL de video válida")
-                uploadMovie(title, synopsis, imageUrl, streamUrl)
+                Log.d("NuevaMovies", "URL de video válida")
+                uploadMovie(movieId, title, synopsis, imageUrl, streamUrl) // Pasa movieId aquí
             } else {
                 Toast.makeText(this, "URL de video inválida. Intenta con otra.", Toast.LENGTH_LONG).show()
             }
@@ -167,27 +167,31 @@ class MainActivity : AppCompatActivity() {
 
     // Subir los datos a Firestore
     private fun uploadMovie(
+        movieId: String?,
         title: String,
         synopsis: String,
         imageUrl: String,
         streamUrl: String
     ) {
-        val movie = hashMapOf(
-            "title" to title,
-            "synopsis" to synopsis,
-            "imageUrl" to imageUrl,
-            "streamUrl" to streamUrl,
-            "createdAt" to Timestamp.now() // Agregar la fecha de creación
+        if (movieId == null) return
+
+        // Crear un mapa mutable y especificar el tipo de cada valor
+        val movie: MutableMap<String, Any> = mutableMapOf(
+            "title" to title as Any,
+            "synopsis" to synopsis as Any,
+            "imageUrl" to imageUrl as Any,
+            "streamUrl" to streamUrl as Any,
+            "updatedAt" to Timestamp.now() // Agregar la fecha de actualización
         )
 
-        db.collection("movies")
-            .add(movie)
+        // Actualizar el documento en Firestore
+        db.collection("vermovies").document(movieId)
+            .set(movie)
             .addOnSuccessListener {
-                Toast.makeText(this, "Película subida correctamente", Toast.LENGTH_LONG).show()
-                clearFields()
+                Toast.makeText(this, "Película actualizada correctamente", Toast.LENGTH_LONG).show()
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this, "Error al enviar los datos: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Error al actualizar la película: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
 
@@ -202,7 +206,7 @@ class MainActivity : AppCompatActivity() {
 
     // Abrir página web
     private fun openWebPage(url: String) {
-        Log.d("MainActivity", "Intentando abrir la URL: $url") // Para depuración
+        Log.d("NuevaMovies", "Intentando abrir la URL: $url") // Para depuración
         val webpage: Uri = Uri.parse(url)
         val intent = Intent(Intent.ACTION_VIEW, webpage)
 

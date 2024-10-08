@@ -6,10 +6,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.creativem.cineflexurl.adapter.MoviesAdapter
+import com.creativem.cineflexurl.dialogFragment.EditMovies
 import com.creativem.cineflexurl.modelo.Movie
 import com.google.firebase.firestore.FirebaseFirestore
 
-class Movies : AppCompatActivity() {
+class VerMovies : AppCompatActivity() {
     private lateinit var recyclerViewMovies: RecyclerView
     private lateinit var moviesAdapter: MoviesAdapter
     private var movieList: MutableList<Movie> = mutableListOf()
@@ -17,14 +18,13 @@ class Movies : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.movies)
+        setContentView(R.layout.vermovies)
 
         recyclerViewMovies = findViewById(R.id.recyclerViewMovies)
         recyclerViewMovies.layoutManager = LinearLayoutManager(this)
 
-        moviesAdapter = MoviesAdapter(movieList) { movieId ->
-            deleteMovie(movieId)
-        }
+        // Proporcionar ambas funciones para eliminar y editar la película
+        moviesAdapter = MoviesAdapter(movieList, { movieId -> deleteMovie(movieId) }, { movieId -> editMovie(movieId) }, true)
         recyclerViewMovies.adapter = moviesAdapter
 
         loadMovies()
@@ -54,5 +54,11 @@ class Movies : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Error al eliminar la película", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun editMovie(movieId: String) {
+
+        val dialog = EditMovies.newInstance(movieId)
+        dialog.show(supportFragmentManager, "EditMovieDialog")
     }
 }

@@ -15,6 +15,7 @@ class PedidosMovies : AppCompatActivity() {
     private lateinit var recyclerViewPedidos: RecyclerView
     private lateinit var moviesAdapter: MoviesAdapter
     private var movieList: MutableList<Movie> = mutableListOf()
+
     private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,16 +27,14 @@ class PedidosMovies : AppCompatActivity() {
 
         db = FirebaseFirestore.getInstance()
 
-        // Proporcionar la implementación del lambda para onDeleteClick
-        moviesAdapter = MoviesAdapter(movieList) { movieId ->
-            deleteMovie(movieId)
-        }
+        // Solo proporciona la función para eliminar la película
+        moviesAdapter = MoviesAdapter(movieList, { movieId -> deletePedido(movieId) }, { null }, false)
         recyclerViewPedidos.adapter = moviesAdapter
 
-        loadMovies()
+        loadPedido()
     }
 
-    private fun loadMovies() {
+    private fun loadPedido() {
         movieList.clear()
         db.collection("pedidosmovies").get()
             .addOnCompleteListener { task: Task<QuerySnapshot> ->
@@ -50,15 +49,15 @@ class PedidosMovies : AppCompatActivity() {
                 }
             }
             .addOnFailureListener { e ->
-                Log.e("PedidosMovies", "Error loading movies", e)
+                Log.e("PedidosMovies", "Error loading vermovies", e)
             }
     }
 
-    private fun deleteMovie(movieId: String) {
+    private fun deletePedido(movieId: String) {
         db.collection("pedidosmovies").document(movieId).delete()
             .addOnSuccessListener {
                 Toast.makeText(this, "Pedido eliminado", Toast.LENGTH_SHORT).show()
-                loadMovies() // Recargar películas después de eliminar
+                loadPedido() // Recargar películas después de eliminar
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Error al eliminar la película", Toast.LENGTH_SHORT).show()

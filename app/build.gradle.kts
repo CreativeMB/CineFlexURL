@@ -57,4 +57,10 @@ dependencies {
     implementation ("com.squareup.okhttp3:okhttp:4.9.1")
 
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
+
+    //coroutines
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("com.github.kittinunf.fuel:fuel-coroutines:2.3.1")
+
 }

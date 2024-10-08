@@ -5,6 +5,9 @@
         <item name="android:statusBarColor">@color/statusBarColor</item> <!-- Color de la barra de estado -->
         <item name="android:windowLightStatusBar">true</item> <!-- Para que los íconos de la barra sean oscuros -->
     </style>
-
+    <style name="FullScreenDialog" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
 
 </resources>
