@@ -34,7 +34,7 @@
             <TextView
                 android:id="@+id/deleteButton"
                 android:layout_width="40dp"
-                android:layout_height="50dp"
+                android:layout_height="30dp"
                 android:background="@drawable/delete"
                 android:textColor="@android:color/holo_red_dark"/>
         </LinearLayout>
@@ -42,12 +42,11 @@
         <!-- Mover el botón de editar a la parte inferior -->
         <TextView
             android:id="@+id/editButton"
-            android:layout_width="50dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/baseline_edit_square_24"
-            android:textColor="@android:color/holo_blue_dark"
-            android:paddingTop="8dp"/>
+            android:text="Editar"
+            android:textColor="@android:color/holo_blue_dark"/>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
